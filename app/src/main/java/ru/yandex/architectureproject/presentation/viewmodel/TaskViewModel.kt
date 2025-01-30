@@ -56,7 +56,7 @@ class TaskViewModel(
                     is TaskAction.DeleteTask -> deleteTaskUseCase(action.taskId)
                 }
                 if (action !is TaskAction.LoadTasks) {
-                    loadTasks()
+                    reduce(TaskAction.LoadTasks)
                 }
             }
         }
