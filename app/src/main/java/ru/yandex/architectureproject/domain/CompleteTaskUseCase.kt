@@ -13,6 +13,6 @@ class CompleteTaskUseCase(
     }
 
     private companion object {
-        const val DELAY_TO_DELETE = 10L
+        const val DELAY_TO_DELETE = 10000L
     }
 }

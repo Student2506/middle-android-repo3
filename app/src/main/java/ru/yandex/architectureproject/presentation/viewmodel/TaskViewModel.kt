@@ -3,11 +3,13 @@ package ru.yandex.architectureproject.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import ru.yandex.architectureproject.domain.AddTaskUseCase
@@ -28,6 +30,7 @@ class TaskViewModel(
 ) : ViewModel() {
     private val _state = MutableStateFlow<TaskState>(TaskState.Loading)
     val state: StateFlow<TaskState> = _state.asStateFlow()
+    val actualTasks: MutableMap<Int, Job?> = mutableMapOf()
 
     init {
         reduce(TaskAction.LoadTasks)
@@ -42,9 +45,11 @@ class TaskViewModel(
 
                     is TaskAction.UpdateTaskStatus -> {
                         if (action.isDone) {
-                            incompleteTaskUseCase.invoke(action.taskId)
+                            actualTasks[action.taskId] = this.coroutineContext.job
+                            completeTaskUseCase(action.taskId)
                         } else {
-                            completeTaskUseCase.invoke(action.taskId)
+                            actualTasks[action.taskId]?.cancel()
+                            incompleteTaskUseCase(action.taskId)
                         }
                     }
 
