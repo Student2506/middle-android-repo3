@@ -35,6 +35,7 @@ class TaskViewModel(
 
     fun reduce(action: TaskAction) {
         // TODO: Здесь должна быть обработка действий
+
     }
 
     private suspend fun loadTasks() {
